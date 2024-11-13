@@ -24,6 +24,7 @@ export function RequestBuilderComponent() {
   const [finalData, setFinalData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedPath, setSelectedPath] = useState(null);
 
   const handleHeaderChange = (index, field, value) => {
     const newHeaders = [...headers];
@@ -99,7 +100,10 @@ export function RequestBuilderComponent() {
               ? "bg-blue-200"
               : ""
           }`}
-          onClick={() => setSelectedValue(data)}
+          onClick={() => {
+            setSelectedValue(data);
+            setSelectedPath(path.join("."));
+          }}
         >
           {JSON.stringify(data)}
         </span>
@@ -141,9 +145,9 @@ export function RequestBuilderComponent() {
   };
 
   const handleFinalSubmit = () => {
-    if (selectedValue === null) return;
-    console.log("Final data to submit:", selectedValue);
-    setFinalData(selectedValue);
+    if (selectedPath === null) return;
+    console.log("Final path to submit:", selectedPath);
+    setFinalData(selectedPath);
   };
 
   return (
@@ -239,18 +243,16 @@ export function RequestBuilderComponent() {
               <Button
                 type="button"
                 onClick={handleFinalSubmit}
-                disabled={selectedValue === null}
+                disabled={selectedPath === null}
               >
-                Submit Selected Value
+                Submit Selected Path
               </Button>
 
               {finalData && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    Selected Value:
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-2">Selected Path:</h3>
                   <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-                    {JSON.stringify(finalData, null, 2)}
+                    {finalData}
                   </pre>
                 </div>
               )}
