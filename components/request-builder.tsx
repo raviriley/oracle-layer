@@ -19,7 +19,11 @@ export function RequestBuilderComponent() {
   const [body, setBody] = useState("");
   const [headers, setHeaders] = useState([{ key: "", value: "" }]);
   const [response, setResponse] = useState(null);
+  const [parsedResponse, setParsedResponse] = useState(null);
+  const [isJsonValid, setIsJsonValid] = useState(true);
+  const [finalData, setFinalData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(null);
 
   const handleHeaderChange = (index, field, value) => {
     const newHeaders = [...headers];
@@ -40,6 +44,9 @@ export function RequestBuilderComponent() {
     e.preventDefault();
     setIsLoading(true);
     setResponse(null);
+    setParsedResponse(null);
+    setIsJsonValid(true);
+    setFinalData(null);
 
     const options = {
       method,
@@ -57,12 +64,22 @@ export function RequestBuilderComponent() {
 
     try {
       const res = await fetch(url, options);
-      const data = await res.json();
+      const textData = await res.text();
+      let jsonData;
+
+      try {
+        jsonData = JSON.parse(textData);
+        setIsJsonValid(true);
+        setParsedResponse(jsonData);
+      } catch (e) {
+        setIsJsonValid(false);
+        setParsedResponse(textData);
+      }
+
       setResponse({
         status: res.status,
         statusText: res.statusText,
         headers: Object.fromEntries(res.headers.entries()),
-        data,
       });
     } catch (error) {
       setResponse({
@@ -73,9 +90,65 @@ export function RequestBuilderComponent() {
     }
   };
 
+  const renderClickableJson = (data, path = []) => {
+    if (typeof data !== "object" || data === null) {
+      return (
+        <span
+          className={`cursor-pointer hover:bg-blue-100 px-1 rounded ${
+            JSON.stringify(data) === JSON.stringify(selectedValue)
+              ? "bg-blue-200"
+              : ""
+          }`}
+          onClick={() => setSelectedValue(data)}
+        >
+          {JSON.stringify(data)}
+        </span>
+      );
+    }
+
+    if (Array.isArray(data)) {
+      return (
+        <span>
+          [
+          <div className="ml-4">
+            {data.map((item, index) => (
+              <div key={index}>
+                {renderClickableJson(item, [...path, index])}
+                {index < data.length - 1 && ","}
+              </div>
+            ))}
+          </div>
+          ]
+        </span>
+      );
+    }
+
+    return (
+      <span>
+        {"{"}
+        <div className="ml-4">
+          {Object.entries(data).map(([key, value], index, arr) => (
+            <div key={key}>
+              <span className="text-gray-500">&quot;{key}&quot;</span>:{" "}
+              {renderClickableJson(value, [...path, key])}
+              {index < arr.length - 1 && ","}
+            </div>
+          ))}
+        </div>
+        {"}"}
+      </span>
+    );
+  };
+
+  const handleFinalSubmit = () => {
+    if (selectedValue === null) return;
+    console.log("Final data to submit:", selectedValue);
+    setFinalData(selectedValue);
+  };
+
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Request Builder</h1>
+      <h1 className="text-2xl font-bold mb-4">Oracle Builder</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex gap-4">
           <Select value={method} onValueChange={setMethod}>
@@ -146,10 +219,43 @@ export function RequestBuilderComponent() {
       </form>
       {response && (
         <div className="mt-8">
-          <h2 className="text-xl font-bold mb-2">Response</h2>
-          <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-            {JSON.stringify(response, null, 2)}
-          </pre>
+          <h2 className="text-xl font-bold">Response</h2>
+          <p className="text-sm text-gray-600 mb-2">
+            Click on any value in the response to select it
+          </p>
+          {!isJsonValid ? (
+            <div>
+              <p className="text-red-500 mb-2">Response is not valid JSON:</p>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+                {parsedResponse}
+              </pre>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-100 p-4 rounded-md overflow-x-auto font-mono">
+                {renderClickableJson(parsedResponse)}
+              </div>
+
+              <Button
+                type="button"
+                onClick={handleFinalSubmit}
+                disabled={selectedValue === null}
+              >
+                Submit Selected Value
+              </Button>
+
+              {finalData && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Selected Value:
+                  </h3>
+                  <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+                    {JSON.stringify(finalData, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
