@@ -20,6 +20,7 @@ pub struct InstantiateOperator {
 ```
 
 During instantiation, the contract:
+
 - Validates operator addresses
 - Calculates the total voting power
 - Stores the configuration in the `CONFIG` item

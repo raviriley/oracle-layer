@@ -101,4 +101,3 @@ if you are not using the instance, you can remove it later.
 ```bash
 cargo run -- wasmatic remove --name YOUR_NAME_HERE
 ```
-

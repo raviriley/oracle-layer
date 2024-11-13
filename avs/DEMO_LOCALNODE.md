@@ -122,5 +122,3 @@ cargo run -- --target=local task-queue add-task -b '{}' -d 'test 1'
 # wait a few secords, or until the log output shows it is executed
 cargo run -- --target=local task-queue view-queue
 ```
-
-
