@@ -25,6 +25,8 @@ export function RequestBuilderComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
   const [selectedPath, setSelectedPath] = useState(null);
+  const [testResponse, setTestResponse] = useState(null);
+  const [isTestLoading, setIsTestLoading] = useState(false);
 
   const handleHeaderChange = (index, field, value) => {
     const newHeaders = [...headers];
@@ -150,6 +152,51 @@ export function RequestBuilderComponent() {
     setFinalData(selectedPath);
   };
 
+  const extractValueFromPath = (obj, path) => {
+    return path.split(".").reduce((acc, part) => {
+      if (acc === null || acc === undefined) return null;
+      return acc[part];
+    }, obj);
+  };
+
+  const handleTestRequest = async () => {
+    if (!selectedPath || !url) return;
+    setIsTestLoading(true);
+    setTestResponse(null);
+
+    const options = {
+      method,
+      headers: headers.reduce((acc, header) => {
+        if (header.key && header.value) {
+          acc[header.key] = header.value;
+        }
+        return acc;
+      }, {}),
+    };
+
+    if (["POST", "PUT", "PATCH"].includes(method) && body) {
+      options.body = body;
+    }
+
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      const extractedValue = extractValueFromPath(data, selectedPath);
+      setTestResponse({
+        success: true,
+        value: extractedValue,
+      });
+      setFinalData(selectedPath);
+    } catch (error) {
+      setTestResponse({
+        success: false,
+        error: error.message,
+      });
+    } finally {
+      setIsTestLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 max-w-3xl">
       <h1 className="text-2xl font-bold mb-4">Oracle Builder</h1>
@@ -240,20 +287,59 @@ export function RequestBuilderComponent() {
                 {renderClickableJson(parsedResponse)}
               </div>
 
-              <Button
-                type="button"
-                onClick={handleFinalSubmit}
-                disabled={selectedPath === null}
-              >
-                Submit Selected Path
-              </Button>
+              {response && isJsonValid && selectedPath && (
+                <div className="mt-4 space-y-4">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={handleFinalSubmit}
+                      disabled={selectedPath === null}
+                    >
+                      Submit Selected Value
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleTestRequest}
+                      disabled={selectedPath === null || isTestLoading}
+                      variant="secondary"
+                    >
+                      {isTestLoading ? "Testing..." : "Test Request"}
+                    </Button>
+                  </div>
 
-              {finalData && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Selected Path:</h3>
-                  <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-                    {finalData}
-                  </pre>
+                  {finalData && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Path to desired value:
+                      </h3>
+                      <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+                        {finalData}
+                      </pre>
+                    </div>
+                  )}
+
+                  {testResponse && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Test Result:
+                      </h3>
+                      {testResponse.success ? (
+                        <div className="bg-gray-100 p-4 rounded-md">
+                          <p className="text-sm text-gray-600 mb-2">
+                            Value extracted from path: {selectedPath}
+                          </p>
+                          <pre className="overflow-x-auto">
+                            {JSON.stringify(testResponse.value, null, 2)}
+                          </pre>
+                        </div>
+                      ) : (
+                        <div className="bg-red-50 text-red-600 p-4 rounded-md">
+                          <p className="font-semibold">Error testing path:</p>
+                          <p>{testResponse.error}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
