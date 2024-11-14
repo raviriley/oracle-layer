@@ -289,7 +289,7 @@ export default function LaunchOracle() {
   }
 
   return (
-    <Card className="mx-auto w-auto md:m-8 h-full">
+    <Card className="w-auto max-w-3xl mx-2 md:mx-auto my-2 md:my-8 h-full">
       <CardHeader>
         <CardTitle>Oracle Builder</CardTitle>
       </CardHeader>
