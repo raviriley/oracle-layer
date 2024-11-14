@@ -42,15 +42,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import StepLoader from "@/components/ui/mutli-step-loader";
 
 const loadingSteps = [
   { text: "Validating input..." },
-  { text: "Uploading image..." },
-  { text: "Creating metadata..." },
-  { text: "Pinning metadata to IPFS..." },
-  { text: "Deploying token contract..." },
-  { text: "Creating token in database..." },
-  { text: "Finalizing..." },
+  { text: "Testing request..." },
+  { text: "Configuring response..." },
+  { text: "Creating oracle..." },
+  { text: "Compiling into wasm..." },
+  { text: "Deploying oracle..." },
+  { text: "Collecting telemetry..." },
 ];
 
 interface TestResponse {
@@ -59,7 +60,7 @@ interface TestResponse {
   error?: string;
 }
 
-export default function LaunchToken() {
+export default function LaunchOracle() {
   const [currentStep, setCurrentStep] = useState(0);
   const [parsedResponse, setParsedResponse] = useState<string>("loading...");
   const [isJsonValid, setIsJsonValid] = useState(true);
@@ -140,6 +141,7 @@ export default function LaunchToken() {
       url: "",
       body: "",
       headers: [{ key: "", value: "" }],
+      selectedPath: "",
     },
   });
 
@@ -162,6 +164,11 @@ export default function LaunchToken() {
     if (form.formState.isValid) {
       console.log("submit");
     }
+  };
+
+  const handleDeploy = async () => {
+    setDeployLoading(true);
+    console.log(form.getValues());
   };
 
   const renderClickableJson = (data: any, path: (string | number)[] = []) => {
@@ -273,8 +280,8 @@ export default function LaunchToken() {
       <StepLoader
         steps={loadingSteps}
         loading={deployLoading}
-        step={stepNumber}
-        error={parsedError}
+        step={0}
+        error={""}
         setLoading={setDeployLoading}
       />
     );
@@ -709,6 +716,7 @@ export default function LaunchToken() {
           <Button
             type="submit"
             className="flex items-center justify-center dark:text-gray-300"
+            onClick={handleDeploy}
           >
             deploy
             <Rocket className="w-4 h-4 ml-2 mt-1 animate-bounce" />
