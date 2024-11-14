@@ -56,7 +56,7 @@ const loadingSteps = [
 
 interface TestResponse {
   success?: boolean;
-  value?: any;
+  value?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   error?: string;
 }
 
@@ -171,6 +171,7 @@ export default function LaunchOracle() {
     console.log(form.getValues());
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderClickableJson = (data: any, path: (string | number)[] = []) => {
     if (typeof data !== "object" || data === null) {
       const dataString = JSON.stringify(data);
