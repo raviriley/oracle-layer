@@ -16,6 +16,7 @@ library = []
 [dependencies]
 cosmwasm-schema = { workspace = true }
 cosmwasm-std = { workspace = true }
+cw-ownable = { workspace = true }
 cw-storage-plus = { workspace = true }
 cw2 = { workspace = true }
 cw-utils = { workspace = true }
@@ -25,8 +26,10 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 cw-orch = { workspace = true }
 lavs-apis = { workspace = true }
+lavs-helpers = { workspace = true }
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }
 lavs-orch = { workspace = true }
 cw-orch = { workspace = true }
+mock-hook-consumer = { path = "../mock-hook-consumer" }

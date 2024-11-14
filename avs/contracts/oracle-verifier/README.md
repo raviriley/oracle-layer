@@ -20,3 +20,4 @@ It works as follows:
 - Votes are validated within the allowed price spread.
 - If a vote is outside the slashable spread, the operator will be slashed.
 - Tasks have expiration times, and the contract automatically checks if a task is expired.
+

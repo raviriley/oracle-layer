@@ -5,7 +5,9 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
+avs-toolkit-shared = {workspace = true}
 lavs-mock-operators = {workspace = true}
+lavs-verifier-simple = {workspace = true}
 lavs-oracle-verifier = {workspace = true}
 lavs-task-queue = {workspace = true}
 lavs-apis = { workspace = true }
@@ -25,3 +27,7 @@ deadpool = {workspace = true}
 rand = {workspace = true}
 reqwest = { workspace = true }
 sha2 = { workspace = true }
+tempfile = { workspace = true }
+wasmtime = { workspace = true }
+wasmtime-wasi-http = { workspace = true }
+wasmtime-wasi = { workspace = true }

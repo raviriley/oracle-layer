@@ -13,7 +13,7 @@ impl Config {
     // but in theory this could be from chain, http endpoint, avs, etc.
     // internally, it does additional loads as needed (e.g. from wasmatic endpoint)
     pub async fn load() -> Result<Self> {
-        let config: Config = serde_json::from_str(include_str!("../config.json"))
+        let config: Config = serde_json::from_str(include_str!("../../config.json"))
             .context("Failed to parse config")?;
 
         // SANITY CHECK
@@ -40,7 +40,7 @@ impl Config {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ChainInfo {
     pub chain: ChainConfig,
-    pub faucet: FaucetConfig,
+    pub faucet: Option<FaucetConfig>,
     pub wasmatic: WasmaticConfig,
 }
 
@@ -52,34 +52,4 @@ pub struct WasmaticConfig {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct FaucetConfig {
     pub mnemonic: String,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GetInfo {
-    pub operators: Vec<String>,
-}
-
-pub(crate) async fn load_wasmatic_addresses(endpoints: &[String]) -> Result<Vec<String>> {
-    let client = reqwest::Client::new();
-
-    futures::future::join_all(endpoints.iter().map(|endpoint| {
-        let client = client.clone();
-        async move {
-            // Load from info endpoint
-            let response = client
-                .get(format!("{}/info", endpoint))
-                .header("Content-Type", "application/json")
-                .send()
-                .await?;
-            let info: GetInfo = response.json().await?;
-            info.operators
-                .first()
-                .context("No operators found")
-                .map(|v| v.to_string())
-        }
-    }))
-    .await
-    .into_iter()
-    .collect::<Result<Vec<String>, _>>()
 }
