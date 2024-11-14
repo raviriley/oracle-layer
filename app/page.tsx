@@ -131,7 +131,7 @@ export default function LaunchOracle() {
     }),
     body: z.string().optional(),
     headers: z.array(z.object({ key: z.string(), value: z.string() })),
-    selectedPath: z.string().optional(),
+    selectedPath: z.string().min(1, { message: "Please select a path" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -699,13 +699,28 @@ export default function LaunchOracle() {
               }
             });
 
+            if (currentStep === 1) {
+              const secondStepFields = ["selectedPath"] as const;
+              await form.trigger(secondStepFields);
+
+              secondStepFields.forEach((field) => {
+                const fieldState = form.getFieldState(field);
+                if (fieldState.invalid) {
+                  isValid = false;
+                }
+              });
+
+              if (!isValid) {
+                toast.error("Please select a path");
+              }
+            }
+
             if (isValid) {
               if (currentStep === 0) {
                 firstStep();
               }
-              console.log("next:", currentStep);
+              console.log("isValid: ", isValid);
               nextStep();
-              console.log("next:", currentStep);
             }
           }}
         >
