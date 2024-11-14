@@ -78,6 +78,7 @@ The contract supports hooks to notify other contracts about task-related events.
 ### Hook Scopes
 
 Hooks can be configured at two levels:
+
 - **Global Hooks**: Apply to all tasks in the system
 - **Task-Specific Hooks**: Apply only to individual tasks
 
@@ -95,6 +96,7 @@ The contract maintains a whitelist of addresses that can create task-specific ho
 ### Hook Messages
 
 When triggered, hooks send messages to their registered receiver contracts containing relevant task information such as:
+
 - Task ID
 - Event type (Created/Completed/Timeout)
 - Task status

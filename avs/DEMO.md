@@ -96,6 +96,7 @@ cargo run task-queue view-queue
 Task hooks allow contracts to receive notifications for task events. The task queue's owner can manage hooks for any receiver address, with the option to make hooks either global or specific to particular tasks. The task owner can allow task creators to add hooks to their own tasks through the task-specific whitelist.
 
 View current hooks:
+
 ```bash
 # View global hooks for a specific type
 cargo run task-queue view-hooks --hook-type completed
@@ -107,6 +108,7 @@ cargo run task-queue view-hooks --hook-type completed --task-id TASK_ID
 ```
 
 Manage task-specific whitelist:
+
 ```bash
 # Add users to the task-specific whitelist
 cargo run task-queue update-task-specific-whitelist --to-add ADDRESS_1,ADDRESS_2,ADDRESS_3
@@ -119,6 +121,7 @@ cargo run task-queue view-task-specific-whitelist
 ```
 
 Register a hook for task events:
+
 ```bash
 # Add global hooks for completed tasks
 cargo run task-queue add-hooks \
@@ -145,6 +148,7 @@ cargo run task-queue add-hooks \
 ```
 
 Remove hooks when no longer needed:
+
 ```bash
 # Remove global hook
 cargo run task-queue remove-hook \
@@ -159,6 +163,7 @@ cargo run task-queue remove-hook \
 ```
 
 The receiver contract will be notified when:
+
 - `completed`: A task is successfully completed
 - `timeout`: A task expires before completion
 - `created`: A new task is added to the queue

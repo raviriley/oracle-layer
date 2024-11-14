@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* Trunk: https://trunkrs.dev/
+- Trunk: https://trunkrs.dev/
 
 ## Environment vars
 

@@ -48,9 +48,9 @@ When the AVS has been triggered and completes its work, it submits this work to 
 
 In theory, the verifying logic can be anything that fulfills the requirements for a given product. In practice, this logic almost always follows some common scheme:
 
-* Minimum number of submissions from trusted operators
-* Results are all identical or close to identical
-* Payment threshhold reached
+- Minimum number of submissions from trusted operators
+- Results are all identical or close to identical
+- Payment threshhold reached
 
 Since these schemes are generic and repeatable, we provide contracts that can be used out of the box such as `simple-verifier` (_TODO: add more, document their features and tradeoffs_)
 
@@ -62,17 +62,17 @@ The decision of which operators are trusted or not, and how to incentivize good 
 
 See [Commmitments Documentation](https://github.com/Lay3rLabs/commitments/blob/main/docs/RESTAKING.md) for more information
 
-## Triggers 
+## Triggers
 
 Each AVS has a specific `Trigger`. Some examples are:
 
-* Task Queue (documented here)
-* Events such as reacting to a coin transfer
-* Cron-like scheduled processeses
+- Task Queue (documented here)
+- Events such as reacting to a coin transfer
+- Cron-like scheduled processeses
 
 In the future, there may be many more kinds of triggers.
 
-The typical usecase is having an explicit queue where tasks can be added and run by the AVS. That's the purpose of the `Task Queue`. It's an on-chain contract with a well-defined system of identifiers, timeouts, events, and payloads - everything needed to work with the queue from clientside and the AVS. 
+The typical usecase is having an explicit queue where tasks can be added and run by the AVS. That's the purpose of the `Task Queue`. It's an on-chain contract with a well-defined system of identifiers, timeouts, events, and payloads - everything needed to work with the queue from clientside and the AVS.
 
 In other words, the `Task Queue` is the glue and the lifecycle of a particular task looks roughly like this (putting aside the security layers mentioned above):
 
@@ -94,4 +94,4 @@ This empowers the composition of services, not by message passing like contracts
 
 ## Registry
 
-In the future - all of the above will be tied together via a registry. It will enforce the rules of the system and make it very easy to get started simply by picking from the different parts (Verifier, Trigger, etc.) and import blessed AVS components as building blocks. 
+In the future - all of the above will be tied together via a registry. It will enforce the rules of the system and make it very easy to get started simply by picking from the different parts (Verifier, Trigger, etc.) and import blessed AVS components as building blocks.

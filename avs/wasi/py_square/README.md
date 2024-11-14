@@ -8,7 +8,7 @@ to demonstate how much less boilerplate is needed for building on Layer.
 ## Setup
 
 First, install [Python 3.10 or later](https://www.python.org/) and
-[pip](https://pypi.org/project/pip/) if you don't already have them.  Then,
+[pip](https://pypi.org/project/pip/) if you don't already have them. Then,
 install [`componentize-py`](https://github.com/bytecodealliance/componentize-py):
 
 ```bash
@@ -92,14 +92,17 @@ First, let's install [`wkg`](https://github.com/bytecodealliance/wasm-pkg-tools)
 This requires Rust 1.80+. Please ensure you have that installed via `rustup` before continuing.
 
 Install `wkg` CLI:
+
 ```bash
 cargo install wkg
 ```
 
 Set default registry configuration:
+
 ```bash
 wkg config --default-registry wa.dev
 ```
+
 For more information about configuration, see
 the [wkg docs](https://github.com/bytecodealliance/wasm-pkg-tools).
 
@@ -109,6 +112,7 @@ WIT interfaces that we will need to build a task queue triggered application.
 ```bash
 mkdir wit && wkg get lay3r:avs -o wit/ && wkg wit fetch
 ```
+
 This creates a new `wit` subdirectory and downloads the WIT files needed for creating a task queue app.
 
 ```bash
@@ -135,7 +139,7 @@ class TaskQueue(TaskQueue):
 
         # serialize the json output as bytes
         output = json.dumps({"y": y}).encode('utf-8')
-        
+
         # return output
         return Ok(output)
 ```
@@ -147,6 +151,7 @@ componentize-py -d ../wit -w task-queue componentize --stub-wasi app -o app.wasm
 ```
 
 And optional optimize the binary size:
+
 ```bash
 jco opt app.wasm -o app.wasm -- --strip-debug -Oz --enable-bulk-memory
 ```
