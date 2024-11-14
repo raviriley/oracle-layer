@@ -52,7 +52,7 @@ semver = "1.0.22"
 itertools = "0.12.1"
 cfg-if = "1.0.0"
 tempfile = "3.13.0"
-wasmtime = { version = "24.0.0", features = [
+wasmtime = { version = "24.0.2", features = [
     "cache",
     "component-model",
     "async",
