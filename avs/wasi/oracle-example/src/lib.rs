@@ -59,6 +59,7 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
         .await
         .map_err(|e| format!("Request failed: {}", e))?;
 
+    // Remove the response.text() call
     let json: serde_json::Value = response
         .json()
         .await
