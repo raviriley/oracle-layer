@@ -1,78 +1,6 @@
-"use client";
-
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Position,
-  Connection,
-  BackgroundVariant,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-
-const initialNodes = [
-  {
-    id: "A",
-    position: { x: 0, y: 0 },
-    data: { label: "User Configures Request & Response Parameters" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-  {
-    id: "B",
-    position: { x: 0, y: 150 },
-    data: { label: "Oracle Configuration Deployed On-Chain" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-  {
-    id: "C",
-    position: { x: 0, y: 300 },
-    data: { label: "Operators Monitor & Fetch Data" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-  {
-    id: "D",
-    position: { x: 0, y: 450 },
-    data: { label: "AVS Validates & Processes JSON Response Off-Chain" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-  {
-    id: "E",
-    position: { x: 0, y: 600 },
-    data: { label: "Operators Update Oracle Data On-Chain" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-  {
-    id: "F",
-    position: { x: 0, y: 750 },
-    data: { label: "Smart Contracts & dApps Use Updated Oracle Data" },
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Top,
-  },
-];
-
-const initialEdges = [
-  { id: "e1", source: "A", target: "B", animated: true },
-  { id: "e2", source: "B", target: "C", animated: true },
-  { id: "e3", source: "C", target: "D", animated: true },
-  { id: "e4", source: "D", target: "E", animated: true },
-  { id: "e5", source: "E", target: "F", animated: true },
-  { id: "e6", source: "F", target: "C", animated: true, type: "smoothstep" },
-];
+import FlowChart from "@/components/flow-chart";
 
 export default function Landing() {
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-  const onConnect = (params: Connection) =>
-    setEdges((eds) => addEdge(params, eds));
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1
@@ -196,17 +124,8 @@ export default function Landing() {
       <div id="flow-chart" className="mt-12">
         <h3 className="text-2xl font-bold mb-4">Oracle Creation Flow</h3>
 
-        <div className="h-[800px] w-full">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            fitView
-          >
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          </ReactFlow>
+        <div className="h-[800px] w-full text-primary-foreground border border-primary rounded-md">
+          <FlowChart />
         </div>
       </div>
 
@@ -235,9 +154,7 @@ export default function Landing() {
       </div>
 
       <div id="personal-experience" className="mt-12">
-        <h3 className="text-2xl font-bold mb-4">
-          Feedback
-        </h3>
+        <h3 className="text-2xl font-bold mb-4">Feedback</h3>
         <p className="mb-4">
           In order to deploy AVS, we had to access the Layer testnet but while
           implementing curl commands with the RPC links, we encountered a 504
