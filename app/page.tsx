@@ -128,7 +128,7 @@ export default function Landing() {
         </li>
         <li>
           <strong>Enhanced Security</strong>: AVS can prevent wrong or malicious
-          data from entering the system and thus corrupting the smart contracts
+          data from entering the system and thus corput the smart contracts
           with false information.
         </li>
         <li>
