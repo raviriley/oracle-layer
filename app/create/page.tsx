@@ -192,7 +192,7 @@ export default function LaunchOracle() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to deploy oracle");
+          throw new Error(`Failed to deploy oracle: ${response.statusText}`);
         }
 
         toast.success("Oracle deployed successfully!");
@@ -200,7 +200,7 @@ export default function LaunchOracle() {
         // router.push("/query");
       } catch (error) {
         setLoadingStep(loadingSteps.length - 1);
-        setLoadingError(`Failed to deploy oracle: ${error}. Please try again.`);
+        setLoadingError(`${error}. Please try again.`);
       }
     }
   };
