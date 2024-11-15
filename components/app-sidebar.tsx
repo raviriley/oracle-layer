@@ -41,7 +41,7 @@ const nav = [
         url: "/#conclusion",
       },
       {
-        title: "Personal Experience and Feedback",
+        title: "Feedback",
         url: "/#personal-experience",
       },
     ],
