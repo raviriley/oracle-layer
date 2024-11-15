@@ -9,13 +9,30 @@ import {
   Position,
   Connection,
   BackgroundVariant,
+  NodeProps,
+  Handle,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { AnimatedSvgEdge } from "./animated-svg-edge";
 
+const CustomNode = ({ data }: NodeProps) => {
+  return (
+    <div className="p-2.5 text-xl border bg-card text-card-foreground rounded">
+      {data.label}
+      <Handle type="target" position={Position.Top} />
+      <Handle type="source" position={Position.Bottom} />
+    </div>
+  );
+};
+
+const nodeTypes = {
+  custom: CustomNode,
+};
+
 const initialNodes = [
   {
     id: "A",
+    type: "custom",
     position: { x: 0, y: 0 },
     data: { label: "User Configures Request & Response Parameters" },
     sourcePosition: Position.Bottom,
@@ -23,13 +40,17 @@ const initialNodes = [
   },
   {
     id: "B",
+    type: "custom",
     position: { x: 0, y: 150 },
-    data: { label: "Oracle Configuration Deployed On-Chain" },
+    data: {
+      label: "API Compiles and Deploys On-Chain Oracle",
+    },
     sourcePosition: Position.Bottom,
     targetPosition: Position.Top,
   },
   {
     id: "C",
+    type: "custom",
     position: { x: 0, y: 300 },
     data: { label: "Operators Monitor & Fetch Data" },
     sourcePosition: Position.Bottom,
@@ -37,6 +58,7 @@ const initialNodes = [
   },
   {
     id: "D",
+    type: "custom",
     position: { x: -75, y: 450 },
     data: { label: "AVS Validates & Processes JSON Response Off-Chain" },
     sourcePosition: Position.Bottom,
@@ -44,6 +66,7 @@ const initialNodes = [
   },
   {
     id: "E",
+    type: "custom",
     position: { x: -75, y: 600 },
     data: { label: "Operators Update Oracle Data On-Chain" },
     sourcePosition: Position.Bottom,
@@ -51,6 +74,7 @@ const initialNodes = [
   },
   {
     id: "F",
+    type: "custom",
     position: { x: 75, y: 750 },
     data: { label: "Smart Contracts & dApps Use Updated Oracle Data" },
     sourcePosition: Position.Bottom,
@@ -83,6 +107,7 @@ export default function FlowChart() {
       onConnect={onConnect}
       fitView
       edgeTypes={{ animated: AnimatedSvgEdge }}
+      nodeTypes={nodeTypes}
     >
       <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
     </ReactFlow>

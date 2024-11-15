@@ -106,7 +106,7 @@ type AnimatedSvg = React.FC<{ animateMotionProps: AnimateMotionProps }>;
 
 const shapes = {
   circle: ({ animateMotionProps }) => (
-    <circle r="5" fill="#ff0073">
+    <circle r="5" fill="#AF7EFF">
       <animateMotion {...animateMotionProps} />
     </circle>
   ),
