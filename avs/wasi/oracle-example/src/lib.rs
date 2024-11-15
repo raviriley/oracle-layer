@@ -23,7 +23,12 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
     let url = "https://jsonplaceholder.typicode.com/users";
     let json_path = "[0].id";
     let body = Some("".to_string());
-    let headers_json = Some(r#"{"Accept": "application/json"}"#.to_string());
+    let headers_json = Some(
+        r#"{
+        "Accept": "application/json"
+    }"#
+        .to_string(),
+    );
 
     // Create HTTP client
     let client = reqwest::Client::new();
@@ -38,8 +43,8 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
 
     // Add headers if provided
     if let Some(headers) = headers_json {
-        let headers_map: serde_json::Value =
-            serde_json::from_str(&headers).map_err(|e| format!("Invalid headers JSON: {}", e))?;
+        let headers_map: serde_json::Value = serde_json::from_str(&headers)
+            .map_err(|e| format!("Invalid headers JSON '{}': {}", headers, e))?;
 
         if let Some(obj) = headers_map.as_object() {
             for (key, value) in obj {
