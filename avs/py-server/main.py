@@ -116,15 +116,16 @@ bindings::export!(Component with_types_in bindings);
 
     # Convert envs dict to CLI-friendly string
     envs_str = ",".join([f"{k}={v}" for k, v in envs.items()])
-
-    print(
-        subprocess.check_output(f"avs-toolkit-cli wasmatic deploy --name {request.args.get('name')} \
-    --wasm-source ./target/wasm32-wasip1/release/my_task.wasm  \
+    
+    os.system("(cd .. && ./scripts/build_wasi.sh)")
+    
+    os.system("ls ../target/wasm32-wasip1/release/")
+    
+    os.system(f"avs-toolkit-cli wasmatic deploy --name {request.args.get('name')} \
+    --wasm-source ../target/wasm32-wasip1/release/oracle_example.wasm \
     --testable \
     --envs {envs_str} \
-    --task $TEST_TASK_QUEUE_ADDRESS"),
-        shell=True,
-    )
+    --task layer1f2tn7zp423zx0ddx8qvapr3kkvs6ygu5zdrsllzjhkak3qtljflsjahk08")
 
     return {"message": "success"}
 

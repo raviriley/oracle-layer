@@ -23,9 +23,7 @@ async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
     let mut req = Request::get("https://jsonplaceholder.typicode.com/users")?;
 
     // Add headers
-    let headers_json = r#"{
-        "Accept": "application/json"
-    }"#;
+    let headers_json = r#"{"Accept": "application/json"}"#;
 
     let headers_map: serde_json::Value = serde_json::from_str(headers_json)
         .map_err(|e| format!("Invalid headers JSON '{}': {}", headers_json, e))?;
