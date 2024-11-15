@@ -30,6 +30,10 @@ def create_oracle_route():
         )
         envs["REQUEST_HEADERS"] = headers_json
 
+    # Add environment variables to current environment
+    for key, value in envs.items():
+        os.environ[key] = value
+
     # Convert envs dict to CLI-friendly string
     envs_str = ",".join([f"{k}={v}" for k, v in envs.items()])
 
