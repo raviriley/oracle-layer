@@ -46,7 +46,7 @@ async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
             let json: serde_json::Value = res.json()?;
 
             // Extract value using JSON path
-            let value = jsonpath_lib::select(&json, "[0].id")
+            let value = jsonpath_lib::select(&json, "$[0].id")
                 .map_err(|e| format!("Invalid JSON path: {}", e))?
                 .first()
                 .ok_or_else(|| "No value found at JSON path".to_string())?
