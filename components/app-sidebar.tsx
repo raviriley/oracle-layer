@@ -16,6 +16,16 @@ import { useTheme } from "next-themes";
 // This is sample data.
 const nav = [
   {
+    title: "Create",
+    url: "/create",
+    icon: Rocket,
+  },
+  {
+    title: "Query",
+    url: "/query",
+    icon: Search,
+  },
+  {
     title: "Research Article",
     url: "/",
     icon: BookOpen,
@@ -45,16 +55,6 @@ const nav = [
         url: "/#personal-experience",
       },
     ],
-  },
-  {
-    title: "Create",
-    url: "/create",
-    icon: Rocket,
-  },
-  {
-    title: "Query",
-    url: "/query",
-    icon: Search,
   },
 ];
 
