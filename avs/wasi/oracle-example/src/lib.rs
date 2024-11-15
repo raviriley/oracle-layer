@@ -20,31 +20,64 @@ impl Guest for Component {
 
 /// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
 async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
-    let api_key = std::env::var("API_KEY").or(Err("missing env var `API_KEY`".to_string()))?;
-    let price = coin_gecko::get_btc_usd_price(&reactor, &api_key)
-        .await
-        .map_err(|err| err.to_string())?
-        .ok_or("invalid response from coin gecko API")?;
+    // Get environment variables for request configuration
+    let method =
+        std::env::var("HTTP_METHOD").or(Err("missing env var `HTTP_METHOD`".to_string()))?;
+    let url = std::env::var("REQUEST_URL").or(Err("missing env var `REQUEST_URL`".to_string()))?;
+    let json_path =
+        std::env::var("JSON_PATH").or(Err("missing env var `JSON_PATH`".to_string()))?;
 
-    // read previous price history
-    let mut history = price_history::PriceHistory::read()?;
+    // Optional body and headers
+    let body = std::env::var("REQUEST_BODY").ok();
+    let headers_json = std::env::var("REQUEST_HEADERS").ok();
 
-    // get current time in secs
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("failed to get current time")
-        .as_secs();
+    // Create HTTP client
+    let client = reqwest::Client::new();
 
-    // record latest price
-    history.record_latest_price(now, price)?;
+    // Build request
+    let mut request = client.request(
+        method
+            .parse()
+            .map_err(|e| format!("Invalid HTTP method: {}", e))?,
+        &url,
+    );
 
-    // calculate average price over the past hour
-    let avg_last_hour = history.average(now - 3600);
+    // Add headers if provided
+    if let Some(headers) = headers_json {
+        let headers_map: serde_json::Value =
+            serde_json::from_str(&headers).map_err(|e| format!("Invalid headers JSON: {}", e))?;
 
-    CalculatedPrices {
-        price: avg_last_hour.price.to_string(),
+        if let Some(obj) = headers_map.as_object() {
+            for (key, value) in obj {
+                request = request.header(key, value.as_str().unwrap_or_default());
+            }
+        }
     }
-    .to_json()
+
+    // Add body if provided
+    if let Some(body_str) = body {
+        request = request.body(body_str);
+    }
+
+    // Send request and get response
+    let response = request
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    let json: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse JSON: {}", e))?;
+
+    // Extract value using JSON path
+    let value = jsonpath_lib::select(&json, &json_path)
+        .map_err(|e| format!("Invalid JSON path: {}", e))?
+        .first()
+        .ok_or_else(|| "No value found at JSON path".to_string())?
+        .to_string();
+
+    CalculatedPrices { price: value }.to_json()
 }
 
 /// The returned result.

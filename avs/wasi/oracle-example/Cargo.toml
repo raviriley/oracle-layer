@@ -8,7 +8,9 @@ rust-version = { workspace = true }
 
 [dependencies]
 anyhow = { workspace = true }
+jsonpath_lib = "0.3.0"
 layer-wasi = { workspace = true }
+reqwest.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 wit-bindgen-rt = { version = "0.32.0", features = ["bitflags"] }
