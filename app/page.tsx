@@ -128,8 +128,8 @@ export default function Landing() {
         </li>
         <li>
           <strong>Enhanced Security</strong>: AVS can prevent wrong or malicious
-          data from entering the system and thus corput the smart contracts
-          with false information.
+          data from entering the system and thus corput the smart contracts with
+          false information.
         </li>
         <li>
           <strong>Enhanced Flexibility</strong>: Oracles can be customized to
