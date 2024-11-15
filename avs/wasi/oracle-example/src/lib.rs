@@ -51,7 +51,7 @@ async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
                 .ok_or_else(|| "No value found at JSON path".to_string())?
                 .to_string();
 
-            CalculatedPrices { pric: value }.to_json()
+            CalculatedPrices { price: value }.to_json()
         }
         status => Err(format!("unexpected status code: {status}")),
     }
