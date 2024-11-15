@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 export default function QueryAVS() {
   const [name, setName] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -123,6 +124,7 @@ export default function QueryAVS() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {data.result.split("\n").map((line: any, index: number) => {
               const match = line.match(
                 /Output for operator `([^`]+)`: (\{.*\})/,
