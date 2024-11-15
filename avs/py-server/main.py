@@ -149,8 +149,17 @@ def parse_output_to_json(output):
     return {"results": results}
 
 
-@app.route("/query_oracle", methods=["GET"])
+@app.route("/query_oracle", methods=["GET", "OPTIONS"])
 def query_oracle_route():
+    if request.method == "OPTIONS":
+        # Handle preflight request
+        response = app.make_response('')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
+    # Handle GET request
     cmd = f"avs-toolkit-cli wasmatic test --name {request.args.get('name')}"
     output = subprocess.check_output(cmd, shell=True)
     parsed_data = parse_output_to_json(output)
