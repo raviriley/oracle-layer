@@ -8,7 +8,6 @@ mod price_history;
 use layer_wasi::{block_on, Reactor};
 
 use serde::Serialize;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 struct Component;
 
@@ -19,7 +18,7 @@ impl Guest for Component {
 }
 
 /// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
-async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
+async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
     // Get environment variables for request configuration
     let method =
         std::env::var("HTTP_METHOD").or(Err("missing env var `HTTP_METHOD`".to_string()))?;
