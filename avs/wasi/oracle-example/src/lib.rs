@@ -23,7 +23,7 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
     let url = "https://jsonplaceholder.typicode.com/users";
     let json_path = "[0].id";
     let body = Some("".to_string());
-    let headers_json = Some("{}".to_string());
+    let headers_json = Some(r#"{"Accept": "application/json"}"#.to_string());
 
     // Create HTTP client
     let client = reqwest::Client::new();
