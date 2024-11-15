@@ -84,9 +84,8 @@ export default function Landing() {
 
       <p className="leading-7 [&:not(:first-child)]:mt-6">
         Oracles are essential instruments built into blockchains that indicate
-        off-chain data on-chain. In our experiment, we created an oracle that
-        any user can deploy on Eigenlayer easily by entering the API and what
-        data they want to extract.
+        off-chain data on-chain. In our project, we created a method for any
+        user to deploy an oracle on Eigenlayer by providing the API.
       </p>
 
       <h2
@@ -97,26 +96,19 @@ export default function Landing() {
       </h2>
 
       <p className="leading-7 [&:not(:first-child)]:mt-6">
-        By using the WebAssembly System Interface (WASI), Actively Validated
+        By using Web Assembly System Interface (WASI), Actively Validated
         Services (AVS) bring a new level of sophistication to how custom oracles
-        validate data, processing complex services off-chain. This means that
-        oracles only bring to-chain data, which is heavily processed and
-        established on-chain as reliable. Through AVS, custom oracles can access
-        Ethereum&apos;s strong security litmus through protocols like
-        EigenLayer. Using this mechanism, oracles can then restake ETH, thus
-        securing their operation with Ethereum&apos;s socio-economic security.
-        As a result, oracles can deliver high-fidelity and reliable data feeds
-        to dApps without an obligation to create and run their independent
-        validator networks. Moreover, AVS supports the creation of decentralized
-        oracle networks, which will integrate real-world data into blockchain
-        ecosystems. An example of this is Eoracle, which is an oracle network
-        built on EigenLayer within the Ethereum ecosystem that provides a way
-        for dApps to access off-chain data transparently and securely. In
-        conclusion, the combination of AVS and authorized oracles patches
-        mitigates vulnerabilities by making the connection between oracle
-        services and smart contracts without complicating their communication
-        process. This makes them much more secure for broader use in a chain
-        environment.
+        validate data, processing complex services off-chain. Through AVS,
+        custom oracles undergo a validation mechanism that allows operators to
+        verify the integrity of potential on-chain data. Oracles can deliver
+        high-fidelity and reliable data feeds to dApps without an obligation to
+        create and run their independent validator networks. Moreover, AVS
+        supports creating decentralized oracle networks, which will integrate
+        real-world data into blockchain ecosystems. The combination of AVS and
+        authorized oracles patches mitigates vulnerabilities by making the
+        connection between oracle services and smart contracts without
+        complicating their communication process. This makes them much more
+        secure for broader use in a chain-based environment.
       </p>
 
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-8">
@@ -136,7 +128,7 @@ export default function Landing() {
         </li>
         <li>
           <strong>Enhanced Security</strong>: AVS can prevent wrong or malicious
-          data from entering the system and thus corrupting the smart contracts
+          data from entering the system and thus corput the smart contracts
           with false information.
         </li>
         <li>
@@ -219,7 +211,7 @@ export default function Landing() {
       </div>
 
       <div id="conclusion" className="mt-12">
-        <h3 className="text-2xl font-bold mb-4">Conclusion</h3>
+        <h3 className="text-2xl font-bold mb-4">Purpose</h3>
 
         <p className="mb-4">
           The incorporation of Actively Validated Services (AVS) within a custom
@@ -239,6 +231,42 @@ export default function Landing() {
           specialized data processing logic and complex validation
           methodologies, ensuring the data on-chain remains both dynamic and
           trustworthy for a wide range of blockchain applications.
+        </p>
+      </div>
+
+      <div id="personal-experience" className="mt-12">
+        <h3 className="text-2xl font-bold mb-4">
+          Personal Experience and Feedback
+        </h3>
+        <p className="mb-4">
+          In order to deploy AVS, we had to access the Layer testnet but while
+          implementing curl commands with the RPC links, we encountered a 504
+          error, entailing that our request could not be completed due to the
+          lack of a timely response to our server. This was due to one of the
+          Layer repos having outdated urls for the curl commands.
+        </p>
+        <p className="mb-4">
+          Another roadblock we encountered was while we were trying to access
+          the faucet for funds to deploy on testnet. We used the Layer docs to
+          implement the Faucet API function code but upon using it, we found out
+          that the API in the Layer SDK does not have funds and that the only
+          way to access faucet funds was through a game on a telegram bot. The
+          docs were misleading for this reason.
+        </p>
+        <p className="mb-4">
+          We also had an issue passing multiple environment variables using the
+          CLI when deploying a WASI component. There is not any specific
+          documentation regarding this exact syntax.
+        </p>
+        <p className="mb-4">
+          Overall, through our developer experience, we enjoyed building with
+          Layer and integrating AVS into our project. We do believe that our
+          experience and the experiences of other developers would be improved
+          if the repos and docs had consistent links and functions that would
+          allow us to access the testnet easier. Additionally, if the telegram
+          bot is the preferred method to access faucet funds, we believe that it
+          would helpful if the information for that method was provided on the
+          docs.
         </p>
       </div>
     </div>
