@@ -24,11 +24,23 @@ def create_oracle_route():
         envs["REQUEST_BODY"] = data["body"]
 
     # Add headers if present
+    headers_json = None
     if data.get("headers"):
-        headers_json = json.dumps(
-            [{"key": h["key"], "value": h["value"]} for h in data["headers"]]
-        )
+        headers_json = json.dumps({h["key"]: h["value"] for h in data["headers"]})
         envs["REQUEST_HEADERS"] = headers_json
+
+    # Update wasi_comp with actual values
+    updated_wasi = wasi_comp.format(
+        method=data["method"],
+        url=data["url"],
+        json_path=data["selectedPath"],
+        body=data.get("body", ""),
+        headers_json=headers_json or "",
+    )
+
+    # Write updated WASI component to file
+    with open("../wasi/oracle-example/src/lib.rs", "w") as f:
+        f.write(updated_wasi)
 
     # Add environment variables to current environment
     for key, value in envs.items():
@@ -62,3 +74,108 @@ def query_oracle_route():
     output = subprocess.check_output(cmd, shell=True)
     parsed_data = parse_output_to_json(output)
     return jsonify(parsed_data)
+
+
+wasi_comp = """
+#[allow(warnings)]
+mod bindings;
+use bindings::{Guest, Output, TaskQueueInput};
+
+mod coin_gecko;
+mod price_history;
+
+use layer_wasi::{block_on, Reactor};
+
+use serde::Serialize;
+
+struct Component;
+
+impl Guest for Component {
+    fn run_task(_input: TaskQueueInput) -> Output {
+        block_on(get_avg_btc)
+    }
+}
+
+/// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
+async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
+    // //Get environment variables for request configuration
+    // let method =
+    //     std::env::var("HTTP_METHOD").or(Err("missing env var `HTTP_METHOD`".to_string()))?;
+    // let url = std::env::var("REQUEST_URL").or(Err("missing env var `REQUEST_URL`".to_string()))?;
+    // let json_path =
+    //     std::env::var("JSON_PATH").or(Err("missing env var `JSON_PATH`".to_string()))?;
+
+    // // Optional body and headers
+    // let body = std::env::var("REQUEST_BODY").ok();
+    // let headers_json = std::env::var("REQUEST_HEADERS").ok();
+    let method = "{method}";
+    let url = "{url}";
+    let json_path = "{json_path}";
+    let body = Some("{body}".to_string());
+    let headers_json = Some("{headers_json}".to_string());
+
+    // Create HTTP client
+    let client = reqwest::Client::new();
+
+    // Build request
+    let mut request = client.request(
+        method
+            .parse()
+            .map_err(|e| format!("Invalid HTTP method: {}", e))?,
+        url,
+    );
+
+    // Add headers if provided
+    if let Some(headers) = headers_json {
+        let headers_map: serde_json::Value =
+            serde_json::from_str(&headers).map_err(|e| format!("Invalid headers JSON: {}", e))?;
+
+        if let Some(obj) = headers_map.as_object() {
+            for (key, value) in obj {
+                request = request.header(key, value.as_str().unwrap_or_default());
+            }
+        }
+    }
+
+    // Add body if provided
+    if let Some(body_str) = body {
+        request = request.body(body_str);
+    }
+
+    // Send request and get response
+    let response = request
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    let json: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse JSON: {}", e))?;
+
+    // Extract value using JSON path
+    let value = jsonpath_lib::select(&json, &json_path)
+        .map_err(|e| format!("Invalid JSON path: {}", e))?
+        .first()
+        .ok_or_else(|| "No valu found at JSON path".to_string())?
+        .to_string();
+
+    CalculatedPrices { price: value }.to_json()
+}
+
+/// The returned result.
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct CalculatedPrices {
+    price: String,
+}
+
+impl CalculatedPrices {
+    /// Serialize to JSON.
+    fn to_json(&self) -> Result<Vec<u8>, String> {
+        serde_json::to_vec(&self).map_err(|err| err.to_string())
+    }
+}
+
+bindings::export!(Component with_types_in bindings);
+"""
