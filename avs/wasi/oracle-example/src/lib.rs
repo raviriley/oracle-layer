@@ -5,7 +5,7 @@ use bindings::{Guest, Output, TaskQueueInput};
 mod coin_gecko;
 mod price_history;
 
-use layer_wasi::{block_on, Reactor};
+use layer_wasi::{block_on, Reactor, Request, WasiPollable};
 
 use serde::Serialize;
 
@@ -18,48 +18,44 @@ impl Guest for Component {
 }
 
 /// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
-async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
-    let method = "GET";
-    let url = "https://jsonplaceholder.typicode.com/users";
-    let json_path = "[0].id";
-    let body = Some("".to_string());
+async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {
+    // Create request
+    let mut req = Request::get("https://jsonplaceholder.typicode.com/users")?;
 
-    // Create HTTP client
-    let client = reqwest::Client::new();
+    // Add headers
+    let headers_json = r#"{
+        "Accept": "application/json"
+    }"#;
 
-    // Build request
-    let mut request = client.request(
-        method
-            .parse()
-            .map_err(|e| format!("Invalid HTTP method: {}", e))?,
-        url,
-    );
+    let headers_map: serde_json::Value = serde_json::from_str(headers_json)
+        .map_err(|e| format!("Invalid headers JSON '{}': {}", headers_json, e))?;
 
-    // Add body if provided
-    if let Some(body_str) = body {
-        request = request.body(body_str);
+    if let Some(obj) = headers_map.as_object() {
+        for (key, value) in obj {
+            req.headers
+                .push((key.clone(), value.as_str().unwrap_or_default().to_string()));
+        }
     }
 
     // Send request and get response
-    let response = request
-        .send()
-        .await
-        .map_err(|e| format!("Request failed: {}", e))?;
+    let res = reactor.send(req).await?;
 
-    // Remove the response.text() call
-    let json: serde_json::Value = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse JSON: {}", e))?;
+    // Check status and parse JSON
+    match res.status {
+        200 => {
+            let json: serde_json::Value = res.json()?;
 
-    // Extract value using JSON path
-    let value = jsonpath_lib::select(&json, &json_path)
-        .map_err(|e| format!("Invalid JSON path: {}", e))?
-        .first()
-        .ok_or_else(|| "No valu found at JSON path".to_string())?
-        .to_string();
+            // Extract value using JSON path
+            let value = jsonpath_lib::select(&json, "$[0].id")
+                .map_err(|e| format!("Invalid JSON path: {}", e))?
+                .first()
+                .ok_or_else(|| "No value found at JSON path".to_string())?
+                .to_string();
 
-    CalculatedPrices { price: value }.to_json()
+            CalculatedPrices { price: value }.to_json()
+        }
+        status => Err(format!("unexpected status code: {status}")),
+    }
 }
 
 /// The returned result.

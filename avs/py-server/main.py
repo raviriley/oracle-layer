@@ -38,7 +38,7 @@ use bindings::{{Guest, Output, TaskQueueInput}};
 mod coin_gecko;
 mod price_history;
 
-use layer_wasi::{{block_on, Reactor}};
+use layer_wasi::{{block_on, Reactor, Request, WasiPollable}};
 
 use serde::Serialize;
 
@@ -51,70 +51,42 @@ impl Guest for Component {{
 }}
 
 /// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
-async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {{
-    // //Get environment variables for request configuration
-    // let method =
-    //     std::env::var("HTTP_METHOD").or(Err("missing env var `HTTP_METHOD`".to_string()))?;
-    // let url = std::env::var("REQUEST_URL").or(Err("missing env var `REQUEST_URL`".to_string()))?;
-    // let json_path =
-    //     std::env::var("JSON_PATH").or(Err("missing env var `JSON_PATH`".to_string()))?;
+async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {{
+    // Create request
+    let mut req = Request::get("{data['url']}")?;
 
-    // // Optional body and headers
-    // let body = std::env::var("REQUEST_BODY").ok();
-    // let headers_json = std::env::var("REQUEST_HEADERS").ok();
-    let method = "{data['method']}";
-    let url = "{data['url']}";
-    let json_path = "{data['selectedPath']}";
-    let body = Some("{data['body'] if hasattr(data, 'body') else ''}".to_string());
-    let headers_json = Some("{headers_json}".to_string());
+    // Add headers
+    let headers_json = r#"{headers_json if headers_json else '{"Accept": "application/json"}'}"#;
 
-    // Create HTTP client
-    let client = reqwest::Client::new();
+    let headers_map: serde_json::Value = serde_json::from_str(headers_json)
+        .map_err(|e| format!("Invalid headers JSON '{{}}': {{}}", headers_json, e))?;
 
-    // Build request
-    let mut request = client.request(
-        method
-            .parse()
-            .map_err(|e| format!("Invalid HTTP method: {{}}", e))?,
-        url,
-    );
-
-    // Add headers if provided
-    if let Some(headers) = headers_json {{
-        let headers_map: serde_json::Value =
-            serde_json::from_str(&headers).map_err(|e| format!("Invalid headers JSON: {{}}", e))?;
-
-        if let Some(obj) = headers_map.as_object() {{
-            for (key, value) in obj {{
-                request = request.header(key, value.as_str().unwrap_or_default());
-            }}
+    if let Some(obj) = headers_map.as_object() {{
+        for (key, value) in obj {{
+            req.headers
+                .push((key.clone(), value.as_str().unwrap_or_default().to_string()));
         }}
     }}
 
-    // Add body if provided
-    if let Some(body_str) = body {{
-        request = request.body(body_str);
-    }}
-
     // Send request and get response
-    let response = request
-        .send()
-        .await
-        .map_err(|e| format!("Request failed: {{}}", e))?;
+    let res = reactor.send(req).await?;
 
-    let json: serde_json::Value = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse JSON: {{}}", e))?;
+    // Check status and parse JSON
+    match res.status {{
+        200 => {{
+            let json: serde_json::Value = res.json()?;
 
-    // Extract value using JSON path
-    let value = jsonpath_lib::select(&json, &json_path)
-        .map_err(|e| format!("Invalid JSON path: {{}}", e))?
-        .first()
-        .ok_or_else(|| "No valu found at JSON path".to_string())?
-        .to_string();
+            // Extract value using JSON path
+            let value = jsonpath_lib::select(&json, "$[0].id")
+                .map_err(|e| format!("Invalid JSON path: {{}}", e))?
+                .first()
+                .ok_or_else(|| "No value found at JSON path".to_string())?
+                .to_string();
 
-    CalculatedPrices {{ price: value }}.to_json()
+            CalculatedPrices {{ price: value }}.to_json()
+        }}
+        status => Err(format!("unexpected status code: {{status}}")),
+    }}
 }}
 
 /// The returned result.
@@ -145,12 +117,15 @@ bindings::export!(Component with_types_in bindings);
     # Convert envs dict to CLI-friendly string
     envs_str = ",".join([f"{k}={v}" for k, v in envs.items()])
 
-    print(subprocess.check_output(f"avs-toolkit-cli wasmatic deploy --name {request.args.get('name')} \
+    print(
+        subprocess.check_output(f"avs-toolkit-cli wasmatic deploy --name {request.args.get('name')} \
     --wasm-source ./target/wasm32-wasip1/release/my_task.wasm  \
     --testable \
     --envs {envs_str} \
-    --task $TEST_TASK_QUEUE_ADDRESS"), shell=True)
-    
+    --task $TEST_TASK_QUEUE_ADDRESS"),
+        shell=True,
+    )
+
     return {"message": "success"}
 
 
