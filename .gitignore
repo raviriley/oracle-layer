@@ -38,3 +38,6 @@ next-env.d.ts
 
 # AVS
 avs/target
+
+# python
+avs/py-server/__pycache__
