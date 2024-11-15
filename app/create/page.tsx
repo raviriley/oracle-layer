@@ -216,9 +216,11 @@ export default function LaunchOracle() {
       const dataString = JSON.stringify(data);
       return (
         <span
-          className={`cursor-pointer hover:bg-purple-100 px-1 rounded ${
-            dataString === JSON.stringify(selectedValue) ? "bg-purple-200" : ""
-          }`}
+          className={cn(
+            "cursor-pointer hover:bg-primary/60 px-1 rounded",
+            dataString === JSON.stringify(selectedValue) &&
+              "bg-primary hover:bg-primary",
+          )}
           onClick={() => {
             setSelectedValue(data);
             form.setValue("selectedPath", path.join("."));
@@ -501,7 +503,7 @@ export default function LaunchOracle() {
                       Click on any value in the response to select it
                     </p>
                     <div className="space-y-4">
-                      <ScrollArea className="sm:h-[200px] md:h-[300px] rounded-md bg-gray-100 p-4 font-mono">
+                      <ScrollArea className="sm:h-[200px] md:h-[300px] rounded-md bg-muted p-4 font-mono">
                         {renderClickableJson(parsedResponse)}
                       </ScrollArea>
 
@@ -510,7 +512,7 @@ export default function LaunchOracle() {
                           <h3 className="text-lg font-semibold mb-2">
                             Selected path
                           </h3>
-                          <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+                          <pre className="bg-muted p-4 rounded-md overflow-x-auto">
                             {form.watch("selectedPath")}
                           </pre>
                           <Button
