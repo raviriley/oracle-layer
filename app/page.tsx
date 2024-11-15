@@ -1,7 +1,79 @@
+"use client";
+
+import {
+  ReactFlow,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+
+const initialNodes = [
+  {
+    id: "A",
+    position: { x: 0, y: 0 },
+    data: { label: "User Configures Request & Response Parameters" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+  {
+    id: "B",
+    position: { x: 0, y: 150 },
+    data: { label: "Oracle Configuration Deployed On-Chain" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+  {
+    id: "C",
+    position: { x: 0, y: 300 },
+    data: { label: "Operators Monitor & Fetch Data" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+  {
+    id: "D",
+    position: { x: 0, y: 450 },
+    data: { label: "AVS Validates & Processes JSON Response Off-Chain" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+  {
+    id: "E",
+    position: { x: 0, y: 600 },
+    data: { label: "Operators Update Oracle Data On-Chain" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+  {
+    id: "F",
+    position: { x: 0, y: 750 },
+    data: { label: "Smart Contracts & dApps Use Updated Oracle Data" },
+    sourcePosition: "bottom",
+    targetPosition: "top",
+  },
+];
+
+const initialEdges = [
+  { id: "e1", source: "A", target: "B", animated: true },
+  { id: "e2", source: "B", target: "C", animated: true },
+  { id: "e3", source: "C", target: "D", animated: true },
+  { id: "e4", source: "D", target: "E", animated: true },
+  { id: "e5", source: "E", target: "F", animated: true },
+  { id: "e6", source: "F", target: "C", animated: true, type: "smoothstep" },
+];
+
 export default function Landing() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-8">
+      <h1
+        className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-8"
+      >
         Querying APIs to Generate Custom Oracles
       </h1>
 
@@ -12,7 +84,9 @@ export default function Landing() {
         data they want to extract.
       </p>
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 mt-12">
+      <h2
+        className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 mt-12"
+      >
         The Intersection of AVS and Custom Oracles
       </h2>
 
@@ -65,7 +139,9 @@ export default function Landing() {
         </li>
       </ul>
 
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-8">
+      <h3
+        className="scroll-m-20 text-2xl font-semibold tracking-tight mt-8"
+      >
         Network Participants
       </h3>
 
@@ -117,7 +193,24 @@ export default function Landing() {
         </table>
       </div>
 
-      <div className="mt-12">
+      <div id="flow-chart" className="mt-12">
+        <h3 className="text-2xl font-bold mb-4">Oracle Creation Flow</h3>
+
+        <div className="h-[800px] w-full">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
+          >
+            <Background variant="dots" gap={12} size={1} />
+          </ReactFlow>
+        </div>
+      </div>
+
+      <div id="conclusion" className="mt-12">
         <h3 className="text-2xl font-bold mb-4">Conclusion</h3>
 
         <p className="mb-4">
