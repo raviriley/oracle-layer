@@ -16,7 +16,7 @@ import { useTheme } from "next-themes";
 // This is sample data.
 const nav = [
   {
-    title: "Documentation",
+    title: "Research Article",
     url: "/",
     icon: BookOpen,
     items: [
