@@ -11,6 +11,7 @@ import {
   BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { AnimatedSvgEdge } from "./animated-svg-edge";
 
 const initialNodes = [
   {
@@ -58,12 +59,12 @@ const initialNodes = [
 ];
 
 const initialEdges = [
-  { id: "e1", source: "A", target: "B", animated: true },
-  { id: "e2", source: "B", target: "C", animated: true },
-  { id: "e3", source: "C", target: "D", animated: true },
-  { id: "e4", source: "D", target: "E", animated: true },
-  { id: "e5", source: "E", target: "F", animated: true },
-  { id: "e6", source: "F", target: "C", animated: true, type: "smoothstep" },
+  { id: "e1", source: "A", target: "B", animated: true, type: "animated" },
+  { id: "e2", source: "B", target: "C", animated: true, type: "animated" },
+  { id: "e3", source: "C", target: "D", animated: true, type: "animated" },
+  { id: "e4", source: "D", target: "E", animated: true, type: "animated" },
+  { id: "e5", source: "E", target: "F", animated: true, type: "animated" },
+  { id: "e6", source: "F", target: "C", animated: true, type: "animated" },
 ];
 
 export default function FlowChart() {
@@ -81,6 +82,7 @@ export default function FlowChart() {
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
       fitView
+      edgeTypes={{ animated: AnimatedSvgEdge }}
     >
       <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
     </ReactFlow>
