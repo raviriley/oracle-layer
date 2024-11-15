@@ -43,6 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import StepLoader from "@/components/ui/mutli-step-loader";
+import { useRouter } from "next/navigation";
 
 const loadingSteps = [
   { text: "Validating input..." },
@@ -132,6 +133,11 @@ export default function LaunchOracle() {
     body: z.string().optional(),
     headers: z.array(z.object({ key: z.string(), value: z.string() })),
     selectedPath: z.string().min(1, { message: "Please select a path" }),
+    name: z
+      .string()
+      .regex(/^[a-zA-Z0-9]+$/, { message: "Name must be alphanumeric only" })
+      .min(3)
+      .max(32, { message: "Name must be between 3 and 32 characters" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -142,6 +148,7 @@ export default function LaunchOracle() {
       body: "",
       headers: [{ key: "", value: "" }],
       selectedPath: "",
+      name: "",
     },
   });
 
@@ -157,6 +164,8 @@ export default function LaunchOracle() {
       headers.filter((_, i) => i !== index),
     );
   };
+
+  const router = useRouter();
 
   const handleSubmit = async () => {
     form.trigger();
@@ -175,7 +184,7 @@ export default function LaunchOracle() {
 
       try {
         const response = await fetch(
-          `${process.env.BACKEND_URL}/create_oracle`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/create_oracle?name=${form.getValues("name")}`,
           {
             method: "POST",
             headers: {
@@ -196,8 +205,8 @@ export default function LaunchOracle() {
         }
 
         toast.success("Oracle deployed successfully!");
-        // TODO: redirect to the query page
-        // router.push("/query");
+        router.push("/query");
+        setDeployLoading(false);
       } catch (error) {
         setLoadingStep(loadingSteps.length - 1);
         setLoadingError(`${error}. Please try again.`);
@@ -223,7 +232,7 @@ export default function LaunchOracle() {
           )}
           onClick={() => {
             setSelectedValue(data);
-            form.setValue("selectedPath", path.join("."));
+            form.setValue("selectedPath", `$${path.join(".")}`);
             setTestResponse(null);
           }}
         >
@@ -352,6 +361,19 @@ export default function LaunchOracle() {
                 ease: "easeInOut",
               }}
             >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="jakesoracle" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div className="flex gap-4">
                 <FormField
                   control={form.control}
@@ -725,6 +747,7 @@ export default function LaunchOracle() {
           onClick={async () => {
             // validation
             const firstStepFields = [
+              "name",
               "method",
               "url",
               "body",
@@ -761,7 +784,6 @@ export default function LaunchOracle() {
               if (currentStep === 0) {
                 firstStep();
               }
-              console.log("isValid: ", isValid);
               nextStep();
             }
           }}
