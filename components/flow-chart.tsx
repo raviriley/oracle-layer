@@ -14,11 +14,12 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { AnimatedSvgEdge } from "./animated-svg-edge";
+import { ReactNode } from "react";
 
 const CustomNode = ({ data }: NodeProps) => {
   return (
     <div className="p-2.5 text-xl border bg-card text-card-foreground rounded">
-      {data.label}
+      {data.label as ReactNode}
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
     </div>

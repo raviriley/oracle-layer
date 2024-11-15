@@ -16,9 +16,9 @@ import { toast } from "sonner";
 
 export default function QueryAVS() {
   const [name, setName] = useState("");
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!loading) return;
@@ -42,7 +42,7 @@ export default function QueryAVS() {
         setData(data);
       } catch (error) {
         console.error("Error fetching AVS data:", error);
-        setError(error);
+        setError(error as Error);
         toast.error("Error fetching AVS data");
       } finally {
         setLoading(false);
@@ -123,7 +123,7 @@ export default function QueryAVS() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.result.split("\n").map((line, index) => {
+            {data.result.split("\n").map((line: any, index: number) => {
               const match = line.match(
                 /Output for operator `([^`]+)`: (\{.*\})/,
               );
