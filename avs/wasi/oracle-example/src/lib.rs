@@ -19,21 +19,11 @@ impl Guest for Component {
 
 /// Record the latest BTCUSD price and return the JSON serialized result to write to the chain.
 async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
-    // //Get environment variables for request configuration
-    // let method =
-    //     std::env::var("HTTP_METHOD").or(Err("missing env var `HTTP_METHOD`".to_string()))?;
-    // let url = std::env::var("REQUEST_URL").or(Err("missing env var `REQUEST_URL`".to_string()))?;
-    // let json_path =
-    //     std::env::var("JSON_PATH").or(Err("missing env var `JSON_PATH`".to_string()))?;
-
-    // // Optional body and headers
-    // let body = std::env::var("REQUEST_BODY").ok();
-    // let headers_json = std::env::var("REQUEST_HEADERS").ok();
-    let method = "{method}";
-    let url = "{url}";
-    let json_path = "{json_path}";
-    let body = Some("{body}".to_string());
-    let headers_json = Some("{headers_json}".to_string());
+    let method = "GET";
+    let url = "https://jsonplaceholder.typicode.com/users";
+    let json_path = "[0].id";
+    let body = Some("".to_string());
+    let headers_json = Some("None".to_string());
 
     // Create HTTP client
     let client = reqwest::Client::new();
@@ -69,6 +59,7 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
         .await
         .map_err(|e| format!("Request failed: {}", e))?;
 
+    // Remove the response.text() call
     let json: serde_json::Value = response
         .json()
         .await
@@ -78,7 +69,7 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
     let value = jsonpath_lib::select(&json, &json_path)
         .map_err(|e| format!("Invalid JSON path: {}", e))?
         .first()
-        .ok_or_else(|| "No value found at JSON path".to_string())?
+        .ok_or_else(|| "No valu found at JSON path".to_string())?
         .to_string();
 
     CalculatedPrices { price: value }.to_json()
