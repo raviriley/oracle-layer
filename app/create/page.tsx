@@ -51,7 +51,6 @@ const loadingSteps = [
   { text: "Creating oracle..." },
   { text: "Compiling into wasm..." },
   { text: "Deploying oracle..." },
-  { text: "Collecting telemetry..." },
 ];
 
 interface TestResponse {
@@ -69,7 +68,8 @@ export default function LaunchOracle() {
   const [testResponse, setTestResponse] = useState<TestResponse | null>(null);
 
   const [deployLoading, setDeployLoading] = useState(false);
-
+  const [loadingStep, setLoadingStep] = useState(0);
+  const [loadingError, setLoadingError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
 
   const nextStep = () => setCurrentStep(currentStep + 1);
@@ -158,17 +158,56 @@ export default function LaunchOracle() {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     form.trigger();
     if (form.formState.isValid) {
-      console.log("submit");
+      // Set interval to increment loading step
+      const intervalId = setInterval(() => {
+        setLoadingStep((prevStep) => {
+          if (prevStep < 5) {
+            return prevStep + 1;
+          } else {
+            clearInterval(intervalId);
+            return prevStep;
+          }
+        });
+      }, 500);
+
+      try {
+        const response = await fetch(
+          `${process.env.BACKEND_URL}/create_oracle`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              method: form.getValues("method"),
+              url: form.getValues("url"),
+              selectedPath: form.getValues("selectedPath"),
+              body: form.getValues("body"),
+              headers: form.getValues("headers"),
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to deploy oracle");
+        }
+
+        toast.success("Oracle deployed successfully!");
+        // TODO: redirect to the query page
+        // router.push("/query");
+      } catch (error) {
+        setLoadingStep(loadingSteps.length - 1);
+        setLoadingError(`Failed to deploy oracle: ${error}. Please try again.`);
+      }
     }
   };
 
   const handleDeploy = async () => {
     setDeployLoading(true);
-    console.log(form.getValues());
+    handleSubmit();
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -281,15 +320,15 @@ export default function LaunchOracle() {
       <StepLoader
         steps={loadingSteps}
         loading={deployLoading}
-        step={0}
-        error={""}
+        step={loadingStep}
+        error={loadingError}
         setLoading={setDeployLoading}
       />
     );
   }
 
   return (
-    <Card className="w-auto max-w-3xl mx-2 md:mx-auto my-2 md:my-8 h-full">
+    <Card className="w-auto max-w-3xl mx-2 md:mx-auto my-2 md:my-8 h-full transition-all duration-500">
       <CardHeader>
         <CardTitle>Oracle Builder</CardTitle>
       </CardHeader>
