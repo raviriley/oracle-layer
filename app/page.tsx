@@ -72,6 +72,7 @@ export default function Landing() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1
+        id="introduction"
         className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-8"
       >
         Querying APIs to Generate Custom Oracles
@@ -85,6 +86,7 @@ export default function Landing() {
       </p>
 
       <h2
+        id="actively-validated-oracles"
         className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 mt-12"
       >
         The Intersection of AVS and Custom Oracles
@@ -140,6 +142,7 @@ export default function Landing() {
       </ul>
 
       <h3
+        id="network-participants"
         className="scroll-m-20 text-2xl font-semibold tracking-tight mt-8"
       >
         Network Participants

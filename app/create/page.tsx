@@ -445,7 +445,7 @@ export default function LaunchOracle() {
                 ease: "easeInOut",
               }}
             >
-              <div className="">
+              <div>
                 {!isJsonValid ? (
                   <div>
                     <h2 className="text-xl font-bold text-red-500 mb-2">

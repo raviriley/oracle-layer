@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,12 +27,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Toaster richColors theme={"light"} />
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarTrigger />
+          {children}
+          <Toaster richColors theme={"light"} />
+        </SidebarProvider>
       </body>
     </html>
   );
