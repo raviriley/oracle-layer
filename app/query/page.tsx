@@ -51,7 +51,7 @@ export default function QueryAVS() {
       });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim() === "") {
       toast.error("Please enter an oracle name to query");

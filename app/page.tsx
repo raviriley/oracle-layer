@@ -6,6 +6,9 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
+  Position,
+  Connection,
+  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -14,43 +17,43 @@ const initialNodes = [
     id: "A",
     position: { x: 0, y: 0 },
     data: { label: "User Configures Request & Response Parameters" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
   {
     id: "B",
     position: { x: 0, y: 150 },
     data: { label: "Oracle Configuration Deployed On-Chain" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
   {
     id: "C",
     position: { x: 0, y: 300 },
     data: { label: "Operators Monitor & Fetch Data" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
   {
     id: "D",
     position: { x: 0, y: 450 },
     data: { label: "AVS Validates & Processes JSON Response Off-Chain" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
   {
     id: "E",
     position: { x: 0, y: 600 },
     data: { label: "Operators Update Oracle Data On-Chain" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
   {
     id: "F",
     position: { x: 0, y: 750 },
     data: { label: "Smart Contracts & dApps Use Updated Oracle Data" },
-    sourcePosition: "bottom",
-    targetPosition: "top",
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
 ];
 
@@ -64,10 +67,11 @@ const initialEdges = [
 ];
 
 export default function Landing() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
+  const onConnect = (params: Connection) =>
+    setEdges((eds) => addEdge(params, eds));
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -98,20 +102,21 @@ export default function Landing() {
         validate data, processing complex services off-chain. This means that
         oracles only bring to-chain data, which is heavily processed and
         established on-chain as reliable. Through AVS, custom oracles can access
-        Ethereum's strong security litmus through protocols like EigenLayer.
-        Using this mechanism, oracles can then restake ETH, thus securing their
-        operation with Ethereum's socio-economic security. As a result, oracles
-        can deliver high-fidelity and reliable data feeds to dApps without an
-        obligation to create and run their independent validator networks.
-        Moreover, AVS supports the creation of decentralized oracle networks,
-        which will integrate real-world data into blockchain ecosystems. An
-        example of this is Eoracle, which is an oracle network built on
-        EigenLayer within the Ethereum ecosystem that provides a way for dApps
-        to access off-chain data transparently and securely. In conclusion, the
-        combination of AVS and authorized oracles patches mitigates
-        vulnerabilities by making the connection between oracle services and
-        smart contracts without complicating their communication process. This
-        makes them much more secure for broader use in a chain environment.
+        Ethereum&apos;s strong security litmus through protocols like
+        EigenLayer. Using this mechanism, oracles can then restake ETH, thus
+        securing their operation with Ethereum&apos;s socio-economic security.
+        As a result, oracles can deliver high-fidelity and reliable data feeds
+        to dApps without an obligation to create and run their independent
+        validator networks. Moreover, AVS supports the creation of decentralized
+        oracle networks, which will integrate real-world data into blockchain
+        ecosystems. An example of this is Eoracle, which is an oracle network
+        built on EigenLayer within the Ethereum ecosystem that provides a way
+        for dApps to access off-chain data transparently and securely. In
+        conclusion, the combination of AVS and authorized oracles patches
+        mitigates vulnerabilities by making the connection between oracle
+        services and smart contracts without complicating their communication
+        process. This makes them much more secure for broader use in a chain
+        environment.
       </p>
 
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-8">
@@ -208,7 +213,7 @@ export default function Landing() {
             onConnect={onConnect}
             fitView
           >
-            <Background variant="dots" gap={12} size={1} />
+            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
         </div>
       </div>

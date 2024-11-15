@@ -1,15 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  BookOpen,
-  Bot,
-  Rocket,
-  Search,
-  SendToBack,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { BookOpen, Rocket, Search, SendToBack } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
