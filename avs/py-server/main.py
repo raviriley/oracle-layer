@@ -6,7 +6,6 @@ import re
 
 app = Flask(__name__)
 
-
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -85,13 +84,13 @@ async fn get_avg_btc(reactor: Reactor) -> Result<Vec<u8>, String> {{
             let json: serde_json::Value = res.json()?;
 
             // Extract value using JSON path
-            let value = jsonpath_lib::select(&json, "$[0].id")
+            let value = jsonpath_lib::select(&json, "{data['selectedPath']}")
                 .map_err(|e| format!("Invalid JSON path: {{}}", e))?
                 .first()
                 .ok_or_else(|| "No value found at JSON path".to_string())?
                 .to_string();
 
-            CalculatedPrices {{ price: value }}.to_json()
+            CalculatedPrices {{ pric: value }}.to_json()
         }}
         status => Err(format!("unexpected status code: {{status}}")),
     }}
@@ -138,29 +137,9 @@ bindings::export!(Component with_types_in bindings);
     return {"message": "success"}
 
 
-def parse_output_to_json(output):
-    output_str = output.decode("utf-8") if isinstance(output, bytes) else output
-    pattern = r"Output for operator `(https://[^`]+)`: ({.*?})"
-    matches = re.findall(pattern, output_str)
-    results = [
-        {"operator_url": url, "output": json.loads(output_json)}
-        for url, output_json in matches
-    ]
-    return {"results": results}
-
-
-@app.route("/query_oracle", methods=["GET", "OPTIONS"])
+@app.route("/query_oracle", methods=["POST"])
 def query_oracle_route():
-    if request.method == "OPTIONS":
-        # Handle preflight request
-        response = app.make_response('')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        return response
-
     # Handle GET request
     cmd = f"avs-toolkit-cli wasmatic test --name {request.args.get('name')}"
     output = subprocess.check_output(cmd, shell=True)
-    parsed_data = parse_output_to_json(output)
-    return jsonify(parsed_data)
+    return {'result': output.decode('utf-8')}
