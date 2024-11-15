@@ -35,8 +35,12 @@ const nav = [
         url: "/#flow-chart",
       },
       {
-        title: "Conclusion",
+        title: "Purpose",
         url: "/#conclusion",
+      },
+      {
+        title: "Personal Experience and Feedback",
+        url: "/#personal-experience",
       },
     ],
   },
