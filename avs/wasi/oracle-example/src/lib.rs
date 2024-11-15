@@ -22,31 +22,17 @@ async fn get_avg_btc(_reactor: Reactor) -> Result<Vec<u8>, String> {
     let method = "GET";
     let url = "https://jsonplaceholder.typicode.com/users";
     let json_path = "[0].id";
-    let body = Some("".to_string());
 
-    // Create HTTP client
-    let client = reqwest::Client::new();
+    // Create and send request using Request type
+    let request = Request::new(url)
+        .method(method)
+        .map_err(|e| format!("Failed to create request: {}", e))?;
 
-    // Build request
-    let mut request = client.request(
-        method
-            .parse()
-            .map_err(|e| format!("Invalid HTTP method: {}", e))?,
-        url,
-    );
-
-    // Add body if provided
-    if let Some(body_str) = body {
-        request = request.body(body_str);
-    }
-
-    // Send request and get response
     let response = request
         .send()
         .await
         .map_err(|e| format!("Request failed: {}", e))?;
 
-    // Remove the response.text() call
     let json: serde_json::Value = response
         .json()
         .await
